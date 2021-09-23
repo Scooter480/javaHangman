@@ -80,7 +80,7 @@ public class hangman {
         Scanner word = new Scanner(System.in);
         String secretWord = "";
         String[] wordList = {"secret", "hypertext", "turtle", "river", "among", "keyboard", "linux", "string", "dragon", "computer"};
-        if (args == 1){
+        if (args == 2){
         int randomWord = (int) (Math.random()* 10);
             secretWord = wordList[randomWord];
         }
