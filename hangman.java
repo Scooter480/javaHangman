@@ -2,14 +2,10 @@
 import java.util.Scanner;
 public class hangman {
     public static void main(String[] args){
-        if (args.length > 0){
-            argsHandle(args);
-        }
-        else {
+        int a = argsHandle(args);
+        if (a > 0) {
             Scanner scan = new Scanner(System.in);
-            String guess = null;
-            String secret = null;
-            String hidden = "";
+            String guess = "";
             String misses = "";
             int missedNum = 0;
             boolean win = false;
@@ -19,19 +15,9 @@ public class hangman {
             clearScreen();
             System.out.println("Hangman by River Dyke");
             System.out.println("--------------------------");
-            System.out.println("Input secret word to guess: ");
-            //get secret word
-            secret = scan.nextLine();
+            String secret = pickWord(a);
             final String answer = secret;
-            //create * version of secret (hidden)
-            for (int i = 0; i < secret.length(); i++){
-                if (secret.substring(i, i+1).equals(" ")){
-                    hidden += " ";
-                }
-                else{
-                    hidden += "*";
-                }
-            }
+            String hidden = makeDisplay(secret);
             clearScreen();
             makeMan(0);
             while (win == false && lose == false){
@@ -90,6 +76,34 @@ public class hangman {
             }
         }
     }
+    public static String pickWord(int args){
+        Scanner word = new Scanner(System.in);
+        String secretWord = "";
+        String[] wordList = {"secret", "hypertext", "turtle", "river", "among", "keyboard", "linux", "string", "dragon", "computer"};
+        if (args == 1){
+        int randomWord = (int) (Math.random()* 10);
+            secretWord = wordList[randomWord];
+        }
+        else{
+            System.out.println("Input secret word to guess: ");
+            //get secret word
+            secretWord = word.nextLine();
+        }
+        return secretWord;
+    } 
+    public static String makeDisplay(String secretWord) {
+        //create * version of secretWord (hidden)
+        String hidden = "";
+        for (int i = 0; i < secretWord.length(); i++){
+            if (secretWord.substring(i, i+1).equals(" ")){
+                hidden += " ";
+            }
+            else{
+                hidden += "*";
+            }
+        }
+        return hidden;
+    }
     public static void makeMan(int parts){
         //prints a different hanged man depending on misses
         System.out.println("--------");
@@ -140,7 +154,6 @@ public class hangman {
     }  
     public static void helpScreen(){
         //displays the help screen and GNU GPL licence information
-        clearScreen();
         System.out.println("Hangman Game by River Dyke, 2021. For AP Computer Science.");
         System.out.println("-----------------------------------------------------------------------");
         System.out.println("This software is licenced under The GNU General Public Licence v3, and comes with no warranty");
@@ -149,13 +162,25 @@ public class hangman {
         System.out.println("The game starts by asking for a word. The first player should input a word or phrase for the second player to guess, and press enter.");
         System.out.println("The second player should now start playing by inputting a letter they think is in the word or phrase. If the player guesses incorrectly 6 times, the hangman has been hanged, and the game is over. If the player guesses every letter without hanging the hangman, they win.");
     }
-    public static void argsHandle(String[] args){
+    public static int argsHandle(String[] args){
+        if (args.length == 0) {
+            return 1;
+        }
         if (args.length == 1 && args[0].equals("--help")) {
             helpScreen();
+            return 0;
         }
-        else {
+        else if (args.length == 1 && args[0].equals("--random")) {
+            return 2;
+        }
+        else if (args.length > 1){
             System.out.println("Hangman By River Dyke");
             System.out.println("Try \'java hangman --help\' for more information");
+            return 0;
+        }
+        else {
+            return 0;
         }
     }
+
 }
