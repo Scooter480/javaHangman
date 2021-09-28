@@ -2,22 +2,36 @@
 import java.util.Scanner;
 public class hangman {
     public static void main(String[] args){
-        int a = argsHandle(args);
+        Scanner scan = new Scanner(System.in);
+        final int a = argsHandle(args);
         if (a > 0) {
-            Scanner scan = new Scanner(System.in);
+            while(true){
+                playGame(scan, a);
+                if (playAgain(scan)){
+                    continue;
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        scan.close();
+    }
+    public static void playGame(Scanner scan, int a){
             String guess = "";
             String misses = "";
             int missedNum = 0;
             boolean win = false;
             boolean lose = false;
             boolean hit = false;
-            //start
+            //initialize the game, get the secret word
             clearScreen();
             System.out.println("Hangman by River Dyke");
             System.out.println("--------------------------");
-            String secret = pickWord(a);
+            String secret = pickWord(scan, a);
             final String answer = secret;
             String hidden = makeDisplay(secret);
+            //start
             clearScreen();
             makeMan(0);
             while (win == false && lose == false){
@@ -56,14 +70,12 @@ public class hangman {
                     //win condition
                     if (hidden.indexOf("*") == -1){
                         win=true;
-                        scan.close();
                         System.out.println("You Win!");
                         System.out.println("The word was: " + answer);
                     }
                     //lose condition
                     if (missedNum >5){
                         lose = true;
-                        scan.close();
                         System.out.println("You Lose!");
                         System.out.println("The word was: " + answer);
                     }
@@ -74,10 +86,19 @@ public class hangman {
                     System.out.println("Please guess a valid character");
                 }
             }
-        }
     }
-    public static String pickWord(int args){
-        Scanner word = new Scanner(System.in);
+    public static boolean playAgain(Scanner scan){
+        System.out.println("Play Again? (y/n): ");
+        String response = scan.nextLine();
+        if ((response.toLowerCase().strip()).equals("y")){
+            return true;
+        }
+        else {
+            return false;
+        }
+        
+    }
+    public static String pickWord(Scanner scan, int args){
         String secretWord = "";
         String[] wordList = {"secret", "hypertext", "turtle", "river", "among", "keyboard", "linux", "string", "dragon", "computer"};
         if (args == 2){
@@ -87,7 +108,7 @@ public class hangman {
         else{
             System.out.println("Input secret word to guess: ");
             //get secret word
-            secretWord = word.nextLine();
+            secretWord = scan.nextLine();
         }
         return secretWord;
     } 
@@ -173,12 +194,9 @@ public class hangman {
         else if (args.length == 1 && args[0].equals("--random")) {
             return 2;
         }
-        else if (args.length > 1){
+        else {
             System.out.println("Hangman By River Dyke");
             System.out.println("Try \'java hangman --help\' for more information");
-            return 0;
-        }
-        else {
             return 0;
         }
     }
