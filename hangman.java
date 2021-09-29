@@ -103,6 +103,7 @@ public class hangman {
             return true;
         }
         else {
+            clearScreen();
             System.out.println("Please guess a valid character");
             return false;
         }
@@ -113,6 +114,7 @@ public class hangman {
             return true; 
         }
         else {
+            clearScreen();
             System.out.println("Already Guessed " + guess + "!");
             return false;
         }
@@ -122,9 +124,11 @@ public class hangman {
     //check if the guess was correct
     public static boolean checkCorrect(String secret, String guess){
         if (secret.indexOf(guess) == -1){
+            clearScreen();
             return false;
         }
         else {
+            clearScreen();
             return true;
         }
     }
@@ -141,7 +145,6 @@ public class hangman {
     }
 
     public static void printInfo(int missedNum, String misses){
-        clearScreen();
         makeMan(missedNum);
         System.out.println("Misses: " + misses);
     }
