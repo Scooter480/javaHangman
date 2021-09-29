@@ -1,6 +1,7 @@
 //Hangman Game by River Dyke, 2021. For AP Computer Science.
 import java.util.Scanner;
 public class hangman {
+    //main method, plays the game until the player doesn't want to anymore
     public static void main(String[] args){
         Scanner scan = new Scanner(System.in);
         final int a = argsHandle(args);
@@ -17,76 +18,35 @@ public class hangman {
         }
         scan.close();
     }
+    //run the game code
     public static void playGame(Scanner scan, int a){
-            String guess = "";
-            String misses = "";
-            int missedNum = 0;
-            boolean win = false;
-            boolean lose = false;
-            boolean hit = false;
-            //initialize the game, get the secret word
-            clearScreen();
-            System.out.println("Hangman by River Dyke");
-            System.out.println("--------------------------");
-            String secret = pickWord(scan, a);
-            final String answer = secret;
-            String hidden = makeDisplay(secret);
-            //start
-            clearScreen();
-            makeMan(0);
-            while (win == false && lose == false){
-                System.out.println("Word: " + hidden);
-                System.out.println("--------------------------");
-                //get the player's guess
-                System.out.println("Guess: ");
-                guess = scan.nextLine();
-                //check if guess is valid
-                if (guess.indexOf("*") == -1 && guess.indexOf(" ") == -1 && guess.length() == 1 ){
-                    clearScreen();
-                    if (secret.indexOf(guess) != -1) {
-                        while(secret.indexOf(guess) != -1){
-                            //check for any of the guessed letter in the secret word until there is no more, then acknowledge the correct guess
-                            hidden = hidden.substring(0,secret.indexOf(guess)) + guess + hidden.substring(secret.indexOf(guess)+1);
-                            secret = secret.substring(0,secret.indexOf(guess)) + "*" + secret.substring(secret.indexOf(guess)+1);
-                        }
-                        hit = true;
+        initialize();
+        final String secret = pickWord(scan, a);
+        String hidden = makeDisplay(secret);
+        String guess = "";
+        String alreadyGuessed = "";
+        String misses = "";
+        int missedNum = 0;
+        makeMan(0);
+        while (!checkWin(hidden, secret) && !checkLose(missedNum, secret)){
+            System.out.println("Word: " + hidden);
+            guess = getInput(scan);
+            if (checkValid(guess)){
+                if (checkNew(guess, alreadyGuessed)){
+                    if (checkCorrect(secret, guess)){
+                        hidden = unHide(secret, hidden, guess);
                     }
-                    if (hit == false){
-                        //check if letter was already guessed
-                        if (misses.indexOf(guess) != -1 || hidden.indexOf(guess) != -1){
-                            System.out.println("Already guessed " + guess + "!");
-                        }
-                        //add the miss if the player was incorrect
-                        else{
-                            misses += guess + " ";
-                            missedNum = (misses.replaceAll("\\s","")).length();
-                        }
-                    }
-                    //create the hangman, set hit to false, and print any misses
-                    makeMan(missedNum);
-                    hit = false;
-                    System.out.println("Misses: " + misses);
-
-                    //win condition
-                    if (hidden.indexOf("*") == -1){
-                        win=true;
-                        System.out.println("You Win!");
-                        System.out.println("The word was: " + answer);
-                    }
-                    //lose condition
-                    if (missedNum >5){
-                        lose = true;
-                        System.out.println("You Lose!");
-                        System.out.println("The word was: " + answer);
+                    else{
+                        misses += guess + " ";
+                        missedNum = (misses.replaceAll("\\s","")).length();
                     }
                 }
-                else{
-                    clearScreen();
-                    makeMan(missedNum);
-                    System.out.println("Please guess a valid character");
-                }
+                alreadyGuessed += guess;
             }
+            printInfo(missedNum, misses);
+        }
     }
+    //ask the player if they want to play again
     public static boolean playAgain(Scanner scan){
         System.out.println("Play Again? (y/n): ");
         String response = scan.nextLine();
@@ -98,6 +58,12 @@ public class hangman {
         }
         
     }
+    public static void initialize(){
+        clearScreen();
+        System.out.println("Hangman by River Dyke");
+        System.out.println("--------------------------");
+    }
+    //pick the word, either from the user or randomly from a list, depending on arguments
     public static String pickWord(Scanner scan, int args){
         String secretWord = "";
         String[] wordList = {"secret", "hypertext", "turtle", "river", "among", "keyboard", "linux", "string", "dragon", "computer"};
@@ -112,8 +78,8 @@ public class hangman {
         }
         return secretWord;
     } 
+    //create the hidden version of the word, made of * and spaces
     public static String makeDisplay(String secretWord) {
-        //create * version of secretWord (hidden)
         String hidden = "";
         for (int i = 0; i < secretWord.length(); i++){
             if (secretWord.substring(i, i+1).equals(" ")){
@@ -125,6 +91,83 @@ public class hangman {
         }
         return hidden;
     }
+    //get the user's guess
+    public static String getInput(Scanner scan){
+        System.out.println("Guess: ");
+        String guess = scan.nextLine();
+        return guess;
+    }
+    //check if the guess was valid
+    public static boolean checkValid(String guess){
+        if (guess.indexOf("*") == -1 && guess.indexOf(" ") == -1 && guess.length() == 1 ){
+            return true;
+        }
+        else {
+            System.out.println("Please guess a valid character");
+            return false;
+        }
+    }
+    //check if the user has guessed the letter before
+    public static boolean checkNew(String guess, String alreadyGuessed){
+        if (alreadyGuessed.indexOf(guess) == -1){
+            return true; 
+        }
+        else {
+            System.out.println("Already Guessed " + guess + "!");
+            return false;
+        }
+
+
+    }
+    //check if the guess was correct
+    public static boolean checkCorrect(String secret, String guess){
+        if (secret.indexOf(guess) == -1){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    //replace the *s in hidden with the guessed letter
+    public static String unHide(String secret, String hidden, String guess){
+        String secretIndex = "";
+        for (int i = 0; i<secret.length(); i++){
+            secretIndex = secret.substring(i,i+1);
+            if (secretIndex.equals(guess)){
+                hidden = hidden.substring(0,i) + guess + hidden.substring(i+1);
+            }
+        }
+        return hidden;
+    }
+
+    public static void printInfo(int missedNum, String misses){
+        clearScreen();
+        makeMan(missedNum);
+        System.out.println("Misses: " + misses);
+    }
+    //check if the player has won
+    public static boolean checkWin(String hidden, String answer){
+        if (hidden.indexOf("*") == -1){
+            System.out.println("You Win!");
+            System.out.println("The word was: " + answer);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    //check if the player has lost
+    public static boolean checkLose(int missedNum, String answer){
+        if (missedNum >5){
+            System.out.println("You Lose!");
+            System.out.println("The word was: " + answer);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    //make the hangman
     public static void makeMan(int parts){
         //prints a different hanged man depending on misses
         System.out.println("--------");
@@ -168,13 +211,13 @@ public class hangman {
         System.out.println("        |");
         System.out.println("     ------");
     }
+    //clears the screen, from https://stackoverflow.com/questions/2979383/how-to-clear-the-console
     public static void clearScreen() {  
-        //clears the screen, from https://stackoverflow.com/questions/2979383/how-to-clear-the-console
         System.out.print("\033[H\033[2J");  
         System.out.flush();  
     }  
+    //displays the help screen and GNU GPL information
     public static void helpScreen(){
-        //displays the help screen and GNU GPL licence information
         System.out.println("Hangman Game by River Dyke, 2021. For AP Computer Science.");
         System.out.println("-----------------------------------------------------------------------");
         System.out.println("This software is licenced under The GNU General Public Licence v3, and comes with no warranty");
@@ -183,6 +226,7 @@ public class hangman {
         System.out.println("The game starts by asking for a word. The first player should input a word or phrase for the second player to guess, and press enter.");
         System.out.println("The second player should now start playing by inputting a letter they think is in the word or phrase. If the player guesses incorrectly 6 times, the hangman has been hanged, and the game is over. If the player guesses every letter without hanging the hangman, they win.");
     }
+    //handle command line arguments
     public static int argsHandle(String[] args){
         if (args.length == 0) {
             return 1;
