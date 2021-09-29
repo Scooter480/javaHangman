@@ -4,14 +4,11 @@ public class hangman {
     //main method, plays the game until the player doesn't want to anymore
     public static void main(String[] args){
         Scanner scan = new Scanner(System.in);
-        final int a = argsHandle(args);
-        if (a > 0) {
+        final int arg = argsHandle(args);
+        if (arg > 0) {
             while(true){
-                playGame(scan, a);
-                if (playAgain(scan)){
-                    continue;
-                }
-                else{
+                playGame(scan, arg);
+                if (!playAgain(scan)){
                     break;
                 }
             }
@@ -38,7 +35,7 @@ public class hangman {
                     }
                     else{
                         misses += guess + " ";
-                        missedNum = (misses.replaceAll("\\s","")).length();
+                        missedNum++;
                     }
                 }
                 alreadyGuessed += guess;
@@ -50,13 +47,7 @@ public class hangman {
     public static boolean playAgain(Scanner scan){
         System.out.println("Play Again? (y/n): ");
         String response = scan.nextLine();
-        if ((response.toLowerCase().strip()).equals("y")){
-            return true;
-        }
-        else {
-            return false;
-        }
-        
+        return ((response.toLowerCase().strip()).equals("y"));
     }
     public static void initialize(){
         clearScreen();
@@ -68,7 +59,7 @@ public class hangman {
         String secretWord = "";
         String[] wordList = {"secret", "hypertext", "turtle", "river", "among", "keyboard", "linux", "string", "dragon", "computer"};
         if (args == 2){
-        int randomWord = (int) (Math.random()* 10);
+            int randomWord = (int) (Math.random()* wordList.length);
             secretWord = wordList[randomWord];
         }
         else{
@@ -82,7 +73,7 @@ public class hangman {
     public static String makeDisplay(String secretWord) {
         String hidden = "";
         for (int i = 0; i < secretWord.length(); i++){
-            if (secretWord.substring(i, i+1).equals(" ")){
+            if (Character.compare(secretWord.charAt(i),' ') == 0){
                 hidden += " ";
             }
             else{
