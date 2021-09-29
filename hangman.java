@@ -225,8 +225,9 @@ public class hangman {
         System.out.println("-----------------------------------------------------------------------");
         System.out.println("This software is licenced under The GNU General Public Licence v3, and comes with no warranty");
         System.out.println("-----------------------------------------------------------------------");
+        System.out.println("options: --help | --random");
         System.out.println("Playing the game: ");
-        System.out.println("The game starts by asking for a word. The first player should input a word or phrase for the second player to guess, and press enter.");
+        System.out.println("The game starts by asking for a word. \n The first player should input a word or phrase for the second player to guess, and press enter.");
         System.out.println("The second player should now start playing by inputting a letter they think is in the word or phrase. If the player guesses incorrectly 6 times, the hangman has been hanged, and the game is over. If the player guesses every letter without hanging the hangman, they win.");
     }
     //handle command line arguments
