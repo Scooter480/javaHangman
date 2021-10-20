@@ -73,7 +73,7 @@ public class hangman {
     public static String makeDisplay(String secretWord) {
         String hidden = "";
         for (int i = 0; i < secretWord.length(); i++){
-            if (Character.compare(secretWord.charAt(i),' ') == 0){
+            if (secretWord.charAt(i) == ' '){
                 hidden += " ";
             }
             else{
